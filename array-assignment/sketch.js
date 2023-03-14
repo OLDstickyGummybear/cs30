@@ -1,6 +1,6 @@
 let completeFaces = [];
 
-let faceList = [];
+let faceList = []; // list of blank faces
 
 function setup() {
   createCanvas(400, 400);

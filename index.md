@@ -2,6 +2,7 @@
 
 ## Demos
  - [Cubic Disarray](cubic-disarray)
+ - [Terrain Generation](terrain)
 
  ## Projets
  - [Array and Object Notations](array-assignment)
