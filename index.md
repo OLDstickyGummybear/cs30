@@ -4,5 +4,5 @@
  - [Cubic Disarray](cubic-disarray)
  - [Terrain Generation](terrain)
 
- ## Projets
+ ## Projects
  - [Array and Object Notations](array-assignment)
