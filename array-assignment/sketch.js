@@ -8,7 +8,9 @@ let numberOfBrows = 5;
 
 // Array of selected facial features, to be displayed.
 let completeFaces = [];
-let numOfCompleteFaces = 16;
+
+// Number of faces to be generated. Always 16
+const numOfCompleteFaces = 16;
 
 // Arrays of features to choose from
 let faceList = [];
@@ -17,12 +19,16 @@ let noseList = [];
 let mouthList = [];
 let browList = [];
 
+'could probably make into a for loop'
+let listOfCoordinates = [{x: width * 1/5, y: height * 1/5}, {x: width * 1/5, y: height * 2/5}, {x: width * 1/5, y: height * 3/5}, {x: width * 1/5, y: height * 4/5}, {x: width * 2/5, y: height * 1/5},]
+
 // let featureLists = [faceList, eyeList, noseList, mouseList, browList];
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
   populateFeatureArrays(); 
   generateFaces();
+  
 }
 
 function draw() {
@@ -32,6 +38,7 @@ function draw() {
 }
 
 function drawFaces() {
+  
   for (let i = 0; i < completeFaces.length; i ++) {
     // push and pop each face's transformation matrix
   }
