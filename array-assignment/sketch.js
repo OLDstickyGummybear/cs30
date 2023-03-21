@@ -9,10 +9,10 @@ let numberOfMouths = 6;
 let numberOfBrows = 5;
 
 // Array of selected facial features, to be displayed.
-let completeFaces = [];
+let heads = [];
 
 // Number of faces to be generated. Always 16
-const numOfCompleteFaces = 16;
+// const NUMOFCOMPLETEFACES = 16;
 
 // Arrays of features to choose from
 let faceList = [];
@@ -21,7 +21,7 @@ let noseList = [];
 let mouthList = [];
 let browList = [];
 
-let faceTransOrigins = [];
+let headTransOrigins = [];
 
 let sphereRadius = 100;
 
@@ -32,30 +32,28 @@ function setup() {
   angleMode(DEGREES);
   // populateFeatureArrays(); 
   // populateTransOriginArray();
-  generateFaces2();
+  generateHeads();
 }
-
 
 function draw() {
   background(220);
   drawFaces();
 }
 
-
-
 function drawFaces() {
+  // Set origin to top left corner
   translate(windowWidth/2 * -1, windowHeight/2 * -1);
 
-  for (let Face of completeFaces) {
+  for (let Head of heads) {
     
     push();
-    translate(Face.originX, Face.originY, Face.z);
-    rotateY(Face.time / 5);
+    translate(Head.originX, Head.originY, Head.z);
+    rotateY(Head.time / 5);
 
-    sphere(Face.radius);
+    sphere(Head.radius);
 
-    Face.z = sin(Face.time) * 100 - 200;
-    Face.time += 5;
+    Head.z = sin(Head.time) * 100 - 200;
+    Head.time += 5;
     
     pop();
     // push();
@@ -67,20 +65,20 @@ function drawFaces() {
 }
 
 
-function generateFaces2() {
+function generateHeads() {
   for (let xIter = 1; xIter <= 4; xIter++) {
     for (let yIter = 1; yIter <= 4; yIter++) {
       // selects a random feature out of a feature list
 
-      // let randBaseFace = random(faceList.length - 1);
+      // let randFace = random(faceList.length - 1);
       // let randEye = random(eyeList.length - 1);
       // let randNose = random(noseList.length - 1);
       // let randMouth = random(mouthList.length - 1);
       // let randBrow = random(browList.length - 1);
       
-      // plugs the feature indices into the object randomFace
-      let randomFace = {
-        // face: randBaseFace,
+      // plugs the feature indices into the object randomHead
+      let randomHead = {
+        // face: randFace,
         // eye: randEye,
         // nose: randNose,
         // mouth: randMouth,
@@ -94,35 +92,35 @@ function generateFaces2() {
         time: xIter * 30 + yIter * 30,
       };
       
-      // Pushes randomFace into the array of all the randomly generated faces completeFaces
-      completeFaces.push(randomFace);
+      // Pushes randomHead into the array of all the randomly generated faces heads
+      heads.push(randomHead);
     }
   }
 }
 
 function populateFeatureArrays() {
   for (let i = 1; i <= numberOfFaces; i ++) {
-    let fileName = `faceParts/baseface/face${i}.jpg`;
+    let fileName = `headParts/face/face${i}.jpg`;
     faceList.push(loadImage(fileName));
   }
       
   for (let i = 1; i <= numberOfEyes; i ++) {
-    let fileName = `faceParts/eyes/eye${i}.jpg`;
+    let fileName = `headParts/eyes/eye${i}.jpg`;
     eyeList.push(loadImage(fileName));
   }
 
   for (let i = 1; i <= numberOfNoses; i ++) {
-    let fileName = `faceParts/noses/nose${i}.jpg`;
+    let fileName = `headParts/noses/nose${i}.jpg`;
     noseList.push(loadImage(fileName));
   }
 
   for (let i = 1; i <= numberOfMouths; i ++) {
-    let fileName = `faceParts/mouths/mouth${i}.jpg`;
+    let fileName = `headParts/mouths/mouth${i}.jpg`;
     mouthList.push(loadImage(fileName));
   }
 
   for (let i = 1; i <= numberOfBrows; i ++) {
-    let fileName = `faceParts/brows/brow${i}.jpg`;
+    let fileName = `headParts/brows/brow${i}.jpg`;
     browList.push(loadImage(fileName));
   }
 }
@@ -130,10 +128,10 @@ function populateFeatureArrays() {
 // function drawFaces() {
 //   translate(windowWidth/2 * -1, windowHeight/2 * -1);
 //   let z = 0;
-//   for (let Origin of faceTransOrigins) {
+//   for (let Origin of headTransOrigins) {
     
 //     push();
-//     translate(Origin.x, Origin.y, z);
+//     translate(Origin.x, Origin. c y, z);
 //     sphere(80);
     
 //     pop();
@@ -147,7 +145,7 @@ function populateFeatureArrays() {
 
 // function generateFaces() {
 
-//   for (let i = 0; i <= numOfCompleteFaces; i ++) {
+//   for (let i = 0; i <= NUMOFCOMPLETEFACES; i ++) {
     
 //     // selects a random feature out of a feature list
 //     let randBaseFace = random(faceList.length - 1);
@@ -156,8 +154,8 @@ function populateFeatureArrays() {
 //     let randMouth = random(mouthList.length - 1);
 //     let randBrow = random(browList.length - 1);
     
-//     // plugs the feature indices into the object randomFace
-//     let randomFace = {
+//     // plugs the feature indices into the object randomHead
+//     let randomHead = {
 //       face: randBaseFace,
 //       eye: randEye,
 //       nose: randNose,
@@ -168,8 +166,8 @@ function populateFeatureArrays() {
 //       z: 0,
 //     };
 
-//     // Pushes randomFace into the array of all the randomly generated faces completeFaces
-//     completeFaces.push(randomFace);
+//     // Pushes randomHead into the array of all the randomly generated faces heads
+//     heads.push(randomHead);
 //   }
 // }
 
@@ -177,7 +175,7 @@ function populateFeatureArrays() {
 // function populateTransOriginArray() {
 //   for (let xIter = 1; xIter <= 4; xIter++) {
 //     for (let yIter = 1; yIter <= 4; yIter++) {
-//       faceTransOrigins.push({x: width * xIter/ 5, y: height * yIter/5});
+//       headTransOrigins.push({x: width * xIter/ 5, y: height * yIter/5});
 //     }
 //   }
 // }

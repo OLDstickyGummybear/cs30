@@ -4,6 +4,7 @@
  - [Cubic Disarray](cubic-disarray)
  - [Terrain Generation](terrain)
  - [Perlin and Timing](perlin)
+ - [Grid Demo](grid)
 
  ## Projects
  - [Array and Object Notations](array-assignment)
