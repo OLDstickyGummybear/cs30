@@ -5,6 +5,8 @@
  - [Terrain Generation](terrain)
  - [Perlin and Timing](perlin)
  - [Grid Demo](grid)
+ - [Colour Game](colour-game)
+ 
 
  ## Projects
  - [Array and Object Notations](array-assignment)

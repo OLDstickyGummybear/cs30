@@ -100,27 +100,27 @@ function generateHeads() {
 
 function populateFeatureArrays() {
   for (let i = 1; i <= numberOfFaces; i ++) {
-    let fileName = `headParts/face/face${i}.jpg`;
+    let fileName = `projects/array-assignment/headParts/face/face${i}.jpg`;
     faceList.push(loadImage(fileName));
   }
       
   for (let i = 1; i <= numberOfEyes; i ++) {
-    let fileName = `headParts/eyes/eye${i}.jpg`;
+    let fileName = `projects/array-assignment/headParts/eyes/eye${i}.jpg`;
     eyeList.push(loadImage(fileName));
   }
 
   for (let i = 1; i <= numberOfNoses; i ++) {
-    let fileName = `headParts/noses/nose${i}.jpg`;
+    let fileName = `projects/array-assignment/headParts/noses/nose${i}.jpg`;
     noseList.push(loadImage(fileName));
   }
 
   for (let i = 1; i <= numberOfMouths; i ++) {
-    let fileName = `headParts/mouths/mouth${i}.jpg`;
+    let fileName = `projects/array-assignment/headParts/mouths/mouth${i}.jpg`;
     mouthList.push(loadImage(fileName));
   }
 
   for (let i = 1; i <= numberOfBrows; i ++) {
-    let fileName = `headParts/brows/brow${i}.jpg`;
+    let fileName = `projects/array-assignment/headParts/brows/brow${i}.jpg`;
     browList.push(loadImage(fileName));
   }
 }
