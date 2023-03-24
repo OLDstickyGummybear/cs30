@@ -14,7 +14,7 @@ function setup() {
 function draw() {
   for (let y = 1; y <= height; y ++) {
     for (let x = 1; x <= width; x ++) {
-      stroke(Math.floor(map(noiseArray[y][x], 0, 1, 10, 255)));
+      stroke(50, Math.floor(map(noiseArray[y][x], 0, 1, 10, 255)), 100);
       point(x, y);
     }
   }
@@ -22,8 +22,8 @@ function draw() {
 }
 
 function generateNoise() {
-  text('Loading...', 10, 20);
-  noiseArray = [];
+  // text('Loading...', 10, 20);
+  // noiseArray = [];
   for (let y = 1; y <= height; y ++) {
     let newColumn = [];
     for (let x = 1; x <= width; x ++) {
