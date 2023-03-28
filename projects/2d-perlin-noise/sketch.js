@@ -20,9 +20,10 @@ let camZ = 0;
 function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
   strokeWeight(1);
-  generateNoise();
+  
   camera = createCamera();
   worldArray = createEmpty3dArray(genXWidth, genYHeight, genZWidth);
+  generateNoise();
 }
 
 
@@ -62,6 +63,14 @@ function renderTerrain() {
   //     pop();
   //   }
   // }
+  for (let y= 0; y < worldArray.length; y++) {
+    for (let x = 0; x < worldArray[0].length; x++) {
+      for (let z = 0; z < worldArray[0][0].length; z++) {
+        
+      }
+    }
+  }
+
 }
 
 function generateNoise() {
@@ -82,6 +91,9 @@ function generateNoise() {
       worldArray[round(map(noise(x / zoom, z / zoom), 0, 1, 0, genYHeight))][x][z] = 1;
     }
   }
+
+  // Fill the ground beneath
+
 }
 
 function keyPressed() {
