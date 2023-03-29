@@ -23,21 +23,18 @@ function setup() {
   
   camera = createCamera();
   worldArray = createEmpty3dArray(genXWidth, genYHeight, genZWidth);
+  
   generateNoise();
-  background(0);
-  camera.move(500, 0, 2000);
+
+  camera.move(500, 100, 1000); // sets starting camera position
+  rotateY(0.7);
+
   renderTerrain();
   
 }
 
 
 function draw() {
-  // for (let z = 0; z < genZWidth; z ++) {
-  //   for (let x = 0; x < genXWidth; x ++) {
-  //     stroke(50, Math.floor(map(worldArray[z][x], genFloor, genCeiling, 10, 255)), 100);
-  //     point(x, z);
-  //   }
-  // }
   
 }
 
@@ -57,16 +54,7 @@ function createEmpty3dArray(arrayX, arrayY, arrayZ) {
 
 function renderTerrain() {
   background(0);
-  // // Wrong form
-  // translate(-300, -300, 0)
-  // for (let z = 0; z < genZWidth; z ++) {
-  //   for (let x = 0; x < genXWidth; x ++) {
-  //     push();
-  //     translate(x * cubeWidth - 100, worldArray[z][x] + 100, z * cubeWidth);
-  //     box(cubeWidth, cubeWidth, cubeWidth);
-  //     pop();
-  //   }
-  // }
+  orbitControl();
   console.log('rendering');
   for (let y = 0; y < worldArray.length; y++) {
     for (let x = 0; x < worldArray[0].length; x++) {
@@ -85,29 +73,34 @@ function renderTerrain() {
 }
 
 function generateNoise() {
-  // text('Loading...', 10, 20);
-  // worldArray = [];
-  // for (let z = 1; z <= genZWidth; z ++) {
-  //   let newColumn = [];
-  //   for (let x = 1; x <= genXWidth; x ++) {
-  //     blockHeight = round(map(noise(x / zoom, z / zoom), 0, 1, 0, 500));
-  //     newColumn.push(blockHeight);
-  //   }
-  //   worldArray.push(newColumn);
-  // }
-  // console.log('terrain generated');
-
   let xOffset = random(1000000);
   let zOffset = random(1000000);
 
   for (let x = 0; x < worldArray[0].length; x++) {
     for (let z = 0; z < worldArray[0][0].length; z++) {
-      worldArray[round(map(noise((x + xOffset) / zoom, (z + zOffset) / zoom), 0, 1, 0, genYHeight))][x][z] = 1;
+      let yGen = round(map(noise((x + xOffset) / zoom, (z + zOffset) / zoom), 0, 1, 0, genYHeight));
+      worldArray[yGen][x][z] = 1;
+      for (let yIter = yGen + 1; yIter < worldArray.length; yIter ++) {
+        console.log(yIter,x,z);
+        worldArray[yIter][x][z] = 1;
+      }
     }
   }
   console.log('terrain generated');
 
   // Fill the ground beneath
+  // for (let y = 0; y < worldArray.length; y++) {
+  //   for (let x = 0; x < worldArray[0].length; x++) {
+  //     for (let z = 0; z < worldArray[0][0].length; z++) {
+  //       if (worldArray[y][x][z] === 1) {
+  //         for (let yIter = worldArray[y][x][z] - 1; yIter < worldArray.length; yIter ++) {
+  //           console.log(yIter,x,z);
+  //           worldArray[yIter][x][z] = 1;
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 
 }
 
