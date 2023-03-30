@@ -35,7 +35,11 @@ function setup() {
 
 
 function draw() {
-  
+  // push();
+  // fill('red')
+  // translate(0, 200, 0)
+  // box(5, 1000, 5);
+  // pop();
 }
 
 function createEmpty3dArray(arrayX, arrayY, arrayZ) {
@@ -52,17 +56,29 @@ function createEmpty3dArray(arrayX, arrayY, arrayZ) {
   return volume;
 }
 
+function renderTerrainLimited() {
+  background(0);
+  console.log('rendering (ranged)');
+
+}
+
 function renderTerrain() {
   background(0);
   orbitControl();
   console.log('rendering');
+
+  fill('red')
+  translate(0, 200, 0)
+  box(5, 5, 5);
+
   for (let y = 0; y < worldArray.length; y++) {
     for (let x = 0; x < worldArray[0].length; x++) {
       for (let z = 0; z < worldArray[0][0].length; z++) {
         push();
-        translate(x * cubeWidth, y * cubeWidth - 200, z * cubeWidth);
+        translate(x * cubeWidth, y * cubeWidth, z * cubeWidth);
 
         if (worldArray[y][x][z] === 1) {
+          fill(255);
           box(cubeWidth, cubeWidth, cubeWidth);
         }
         pop();
@@ -126,6 +142,7 @@ function keyPressed() {
     camera.move(0, 10, 0);
   }
   renderTerrain();
+  console.log(camera.eyeX);
 }
 
 // function keyPressed() {
