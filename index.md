@@ -9,4 +9,5 @@
  
 
  ## Projects
- - [Array and Object Notations](array-assignment)
+ - [Array Assignment](projects/array-assignment)
+ - [Multidimensional Array](projects/2d-perlin-noise)
