@@ -11,28 +11,50 @@ let genYHeight = 50;
 // let genFloor = 12; // y= 12 is lowest terrain
 // let genCeiling = 1; // y= 50 is highest terrain
 
-let cubeWidth = 30;
+let cubeWidth = 50;
 
-let camX = 0;
-let camY = 0;
-let camZ = 0;
+let spawnY;
+let spawnX = 25;
+let spawnZ = 25;
+
+// let camX = 0;
+// let camY = 0;
+// let camZ = 0;
+
+let renderRadius = 5; // in blocks
+
+let yOffset = -200;
 
 function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
   strokeWeight(1);
+  angleMode(DEGREES);
   
   camera = createCamera();
   worldArray = createEmpty3dArray(genXWidth, genYHeight, genZWidth);
   
   generateNoise();
 
-  camera.move(500, 100, 1000); // sets starting camera position
-  rotateY(0.7);
+  spawnY = findSpawnY(spawnX, spawnZ);
+  
 
-  renderTerrain();
+
+  camera.move(spawnX * cubeWidth, spawnY * cubeWidth, spawnZ * cubeWidth); // sets starting camera position
+  camera.pan(45);
+  camera.tilt(45);
+
+
+  // renderTerrain();
   
 }
 
+function findSpawnY(x, z) {
+  for (let y = 0; y < worldArray.length; y++) {
+    if (worldArray[y][x][z] != 0) {
+      return y + 2;
+    }
+  }
+}
 
 function draw() {
   // push();
@@ -40,6 +62,10 @@ function draw() {
   // translate(0, 200, 0)
   // box(5, 1000, 5);
   // pop();
+
+  // camera.tilt(2);
+  renderTerrainRanged();
+
 }
 
 function createEmpty3dArray(arrayX, arrayY, arrayZ) {
@@ -56,26 +82,23 @@ function createEmpty3dArray(arrayX, arrayY, arrayZ) {
   return volume;
 }
 
-function renderTerrainLimited() {
+function renderTerrainRanged() {
   background(0);
   console.log('rendering (ranged)');
 
-}
-
-function renderTerrain() {
-  background(0);
-  orbitControl();
-  console.log('rendering');
+  let camX = camera.eyeX / cubeWidth;
+  let camY = camera.eyeY / cubeWidth;
+  let camZ = camera.eyeZ / cubeWidth;
 
   fill('red')
   translate(0, 200, 0)
   box(5, 5, 5);
 
-  for (let y = 0; y < worldArray.length; y++) {
-    for (let x = 0; x < worldArray[0].length; x++) {
-      for (let z = 0; z < worldArray[0][0].length; z++) {
+  for (let y = camY - renderRadius; y < camY + renderRadius + 1; y++) {
+    for (let x = camX - renderRadius; x < camX + renderRadius + 1; x++) {
+      for (let z = camZ - renderRadius; z < camZ + renderRadius; z++) {
         push();
-        translate(x * cubeWidth, y * cubeWidth, z * cubeWidth);
+        translate(x * cubeWidth, y * cubeWidth + yOffset, z * cubeWidth);
 
         if (worldArray[y][x][z] === 1) {
           fill(255);
@@ -84,9 +107,33 @@ function renderTerrain() {
         pop();
       }
     }
-    // console.log('layer rendered');
   }
 }
+
+// function renderTerrain() {
+//   background(0);
+//   console.log('rendering');
+
+//   fill('red')
+//   translate(0, 200, 0)
+//   box(5, 5, 5);
+
+//   for (let y = 0; y < worldArray.length; y++) {
+//     for (let x = 0; x < worldArray[0].length; x++) {
+//       for (let z = 0; z < worldArray[0][0].length; z++) {
+//         push();
+//         translate(x * cubeWidth, y * cubeWidth + yOffset, z * cubeWidth);
+
+//         if (worldArray[y][x][z] === 1) {
+//           fill(255);
+//           box(cubeWidth, cubeWidth, cubeWidth);
+//         }
+//         pop();
+//       }
+//     }
+//     // console.log('layer rendered');
+//   }
+// }
 
 function generateNoise() {
   let xOffset = random(1000000);
@@ -121,27 +168,27 @@ function generateNoise() {
 }
 
 function keyPressed() {
-  if (keyIsDown(87)) {
+  if (keyIsDown(87)) { // W
     camera.move(0, 0, -10);
     
   }
-  if (keyIsDown(83)) {
+  if (keyIsDown(83)) { // S
     camera.move(0, 0, 10);
     console.log('moving back');
   }
-  if (keyIsDown(65)) {
+  if (keyIsDown(65)) { // A
     camera.move(-10, 0, 0);
   }
-  if (keyIsDown(68)) {
+  if (keyIsDown(68)) { // D
     camera.move(10, 0, 0);
   }
-  if (keyIsDown(32)) {
+  if (keyIsDown(32)) { // SPACE
     camera.move(0, -10, 0);
   }
-  if (keyIsDown(16)) {
+  if (keyIsDown(16)) { // SHIFT
     camera.move(0, 10, 0);
   }
-  renderTerrain();
+  renderTerrainRanged();
   console.log(camera.eyeX);
 }
 
