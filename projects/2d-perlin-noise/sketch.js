@@ -2,11 +2,11 @@
 
 let worldArray = [];
 
-let zoom = 50;
+let zoom = 10;
 
-let genXWidth = 50;
-let genZWidth = 50;
-let genYHeight = 50;
+let genXWidth = 30;
+let genZWidth = 30;
+let genYHeight = 10;
 
 // let genFloor = 12; // y= 12 is lowest terrain
 // let genCeiling = 1; // y= 50 is highest terrain
@@ -37,14 +37,14 @@ function setup() {
 
   spawnY = findSpawnY(spawnX, spawnZ);
   
-
+  camera.move(0, 0, 1000);
 
   camera.move(spawnX * cubeWidth, spawnY * cubeWidth, spawnZ * cubeWidth); // sets starting camera position
-  camera.pan(45);
-  camera.tilt(45);
+  // camera.pan(45);
+  // camera.tilt(45);
 
 
-  // renderTerrain();
+  renderTerrain();
   
 }
 
@@ -64,7 +64,7 @@ function draw() {
   // pop();
 
   // camera.tilt(2);
-  renderTerrainRanged();
+  // renderTerrainRanged();
 
 }
 
@@ -110,30 +110,30 @@ function renderTerrainRanged() {
   }
 }
 
-// function renderTerrain() {
-//   background(0);
-//   console.log('rendering');
+function renderTerrain() {
+  background(0);
+  console.log('rendering');
 
-//   fill('red')
-//   translate(0, 200, 0)
-//   box(5, 5, 5);
+  fill('red')
+  translate(0, 200, 0)
+  box(5, 5, 5);
 
-//   for (let y = 0; y < worldArray.length; y++) {
-//     for (let x = 0; x < worldArray[0].length; x++) {
-//       for (let z = 0; z < worldArray[0][0].length; z++) {
-//         push();
-//         translate(x * cubeWidth, y * cubeWidth + yOffset, z * cubeWidth);
+  for (let y = 0; y < worldArray.length; y++) {
+    for (let x = 0; x < worldArray[0].length; x++) {
+      for (let z = 0; z < worldArray[0][0].length; z++) {
+        push();
+        translate(x * cubeWidth, y * cubeWidth + yOffset, z * cubeWidth);
 
-//         if (worldArray[y][x][z] === 1) {
-//           fill(255);
-//           box(cubeWidth, cubeWidth, cubeWidth);
-//         }
-//         pop();
-//       }
-//     }
-//     // console.log('layer rendered');
-//   }
-// }
+        if (worldArray[y][x][z] === 1) {
+          fill(255);
+          box(cubeWidth, cubeWidth, cubeWidth);
+        }
+        pop();
+      }
+    }
+    // console.log('layer rendered');
+  }
+}
 
 function generateNoise() {
   let xOffset = random(1000000);
@@ -188,7 +188,8 @@ function keyPressed() {
   if (keyIsDown(16)) { // SHIFT
     camera.move(0, 10, 0);
   }
-  renderTerrainRanged();
+  // renderTerrainRanged();
+  renderTerrain();
   console.log(camera.eyeX);
 }
 
