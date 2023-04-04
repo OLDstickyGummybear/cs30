@@ -2,7 +2,7 @@
 
 let worldArray = [];
 
-let zoom = 10;
+let zoom = 20;
 
 let genXWidth = 30;
 let genZWidth = 30;
@@ -14,8 +14,8 @@ let genYHeight = 10;
 let cubeWidth = 50;
 
 let spawnY;
-let spawnX = 25;
-let spawnZ = 25;
+let spawnX;
+let spawnZ;
 
 // let camX = 0;
 // let camY = 0;
@@ -29,6 +29,9 @@ function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
   strokeWeight(1);
   angleMode(DEGREES);
+
+  spawnX = round(genXWidth/2);
+  spawnZ = round(genZWidth/2);
   
   camera = createCamera();
   worldArray = createEmpty3dArray(genXWidth, genYHeight, genZWidth);
@@ -37,11 +40,11 @@ function setup() {
 
   spawnY = findSpawnY(spawnX, spawnZ);
   
-  camera.move(0, 0, 1000);
+  // camera.move(0, 0, 1000);
 
-  camera.move(spawnX * cubeWidth, spawnY * cubeWidth, spawnZ * cubeWidth); // sets starting camera position
-  // camera.pan(45);
-  // camera.tilt(45);
+  camera.move(spawnX * cubeWidth, spawnY * -cubeWidth, spawnZ * cubeWidth); // sets starting camera position
+  camera.pan(45);
+  camera.tilt(45);
 
 
   renderTerrain();
@@ -65,6 +68,13 @@ function draw() {
 
   // camera.tilt(2);
   // renderTerrainRanged();
+  background(0);
+  directionalLight(255, 255, 0, 0, 40, 0)
+
+  moveCam();
+
+  renderTerrain();
+
 
 }
 
@@ -111,7 +121,6 @@ function renderTerrainRanged() {
 }
 
 function renderTerrain() {
-  background(0);
   console.log('rendering');
 
   fill('red')
@@ -142,10 +151,10 @@ function generateNoise() {
   for (let x = 0; x < worldArray[0].length; x++) {
     for (let z = 0; z < worldArray[0][0].length; z++) {
       let yGen = round(map(noise((x + xOffset) / zoom, (z + zOffset) / zoom), 0, 1, 0, genYHeight));
-      worldArray[yGen][x][z] = 1;
+      worldArray[yGen][x][z] = 1; // Generates top layer; 1 is grass
       for (let yIter = yGen + 1; yIter < worldArray.length; yIter ++) {
         console.log(yIter,x,z);
-        worldArray[yIter][x][z] = 1;
+        worldArray[yIter][x][z] = 2; // Generates lower layers; 2 is dirt
       }
     }
   }
@@ -167,7 +176,7 @@ function generateNoise() {
 
 }
 
-function keyPressed() {
+function moveCam() {
   if (keyIsDown(87)) { // W
     camera.move(0, 0, -10);
     
@@ -188,8 +197,21 @@ function keyPressed() {
   if (keyIsDown(16)) { // SHIFT
     camera.move(0, 10, 0);
   }
-  // renderTerrainRanged();
-  renderTerrain();
+
+  if (keyIsDown(LEFT_ARROW)) { // <-
+    camera.pan(1);
+  }
+  if (keyIsDown(RIGHT_ARROW)) { // ->
+    camera.pan(-1);
+  }
+  if (keyIsDown(UP_ARROW)) { // ^
+    camera.tilt(-1);
+  }
+  if (keyIsDown(DOWN_ARROW)) { // v
+    camera.tilt(1);
+  }
+
+
   console.log(camera.eyeX);
 }
 
