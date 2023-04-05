@@ -6,7 +6,7 @@ let zoom = 20;
 
 let genXWidth = 30;
 let genZWidth = 30;
-let genYHeight = 10;
+let genYHeight = 30;
 
 // let genFloor = 12; // y= 12 is lowest terrain
 // let genCeiling = 1; // y= 50 is highest terrain
@@ -17,17 +17,22 @@ let spawnY;
 let spawnX;
 let spawnZ;
 
-// let camX = 0;
-// let camY = 0;
-// let camZ = 0;
+let grass;
+let dirt;
 
 let renderRadius = 5; // in blocks
 
 let yOffset = -200;
 
+function preload() {
+  grass = loadImage('grass.png');
+  dirt = loadImage('dirt.png');
+  stone = loadImage('stone.png');
+}
+
 function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
-  strokeWeight(1);
+  noStroke();
   angleMode(DEGREES);
 
   spawnX = round(genXWidth/2);
@@ -69,7 +74,7 @@ function draw() {
   // camera.tilt(2);
   // renderTerrainRanged();
   background(0);
-  directionalLight(255, 255, 0, 0, 40, 0)
+  // directionalLight(255, 255, 255, 1, 0, 1)
 
   moveCam();
 
@@ -110,8 +115,14 @@ function renderTerrainRanged() {
         push();
         translate(x * cubeWidth, y * cubeWidth + yOffset, z * cubeWidth);
 
-        if (worldArray[y][x][z] === 1) {
-          fill(255);
+        if (worldArray[y][x][z] !== 0) {
+          if (worldArray[y][x][z] === 1) {
+            fill('green');
+          }
+          if (worldArray[y][x][z] === 2) {
+            fill('brown');
+          }
+
           box(cubeWidth, cubeWidth, cubeWidth);
         }
         pop();
@@ -133,8 +144,17 @@ function renderTerrain() {
         push();
         translate(x * cubeWidth, y * cubeWidth + yOffset, z * cubeWidth);
 
-        if (worldArray[y][x][z] === 1) {
-          fill(255);
+        if (worldArray[y][x][z] !== 0) {
+          if (worldArray[y][x][z] === 1) {
+            texture(grass);
+          }
+          if (worldArray[y][x][z] === 2) {
+            texture(dirt);
+          }
+          if (worldArray[y][x][z] === 3) {
+            texture(stone);
+          }
+
           box(cubeWidth, cubeWidth, cubeWidth);
         }
         pop();
@@ -154,7 +174,21 @@ function generateNoise() {
       worldArray[yGen][x][z] = 1; // Generates top layer; 1 is grass
       for (let yIter = yGen + 1; yIter < worldArray.length; yIter ++) {
         console.log(yIter,x,z);
-        worldArray[yIter][x][z] = 2; // Generates lower layers; 2 is dirt
+
+        if (yIter < yGen + 4) {
+          worldArray[yIter][x][z] = 2; // Generates lower layers; 2 is dirt
+        } 
+        // add other layers if needed with else if
+        else {
+          worldArray[yIter][x][z] = 3; // Generates lower layers; 3 is stone
+        }
+
+        // (worldArray.length - yGen < 5 ? worldArray.length : yGen + 5)
+      //   worldArray[yIter][x][z] = 2; // Generates lower layers; 2 is dirt
+      // }
+      // for (let yIter = yGen + 1; yIter < worldArray.length; yIter ++) {
+      //   console.log(yIter,x,z);
+      //   worldArray[yIter][x][z] = 2; // Generates lower layers; 3 is stone
       }
     }
   }
