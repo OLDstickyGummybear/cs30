@@ -4,8 +4,8 @@ let worldArray = [];
 
 let zoom = 20;
 
-let genXWidth = 100;
-let genZWidth = 100;
+let genXWidth = 1000;
+let genZWidth = 1000;
 let genYHeight = 20;
 
 // let genFloor = 12; // y= 12 is lowest terrain
@@ -20,7 +20,7 @@ let spawnZ;
 let grass;
 let dirt;
 
-let renderRadius = 5; // in blocks
+let renderRadius = 15; // in blocks
 
 let yOffset = -200;
 
@@ -47,12 +47,12 @@ function setup() {
   
   // camera.move(0, 0, 1000);
 
-  camera.move(spawnX * cubeWidth, spawnY * -cubeWidth, spawnZ * cubeWidth); // sets starting camera position
+  camera.move(spawnX * cubeWidth, -spawnY * cubeWidth, spawnZ * cubeWidth); // sets starting camera position
   camera.pan(45);
   camera.tilt(45);
 
 
-  renderTerrainRanged();
+  renderTerrain();
   
 }
 
@@ -74,15 +74,15 @@ function draw() {
   // camera.tilt(2);
   // renderTerrainRanged();
   background(0);
-  directionalLight(255, 255, 255, 1, 0, 0);
-  directionalLight(255, 255, 255, 0, 0, 1);
-  directionalLight(255, 255, 255, 0, 0, -1);
-  directionalLight(255, 255, 255, -1, 0, 0);
+  directionalLight(255, 255, 255, 2, 0, 0);
+  directionalLight(255, 255, 255, 0, 0, 2);
+  directionalLight(255, 255, 255, 0, 0, -2);
+  directionalLight(255, 255, 255, -2, 0, 0);
   directionalLight(255, 255, 255, 0, 0.5, 0);
 
   moveCam();
 
-  renderTerrainRanged();
+  renderTerrain();
 
 
 }
@@ -102,6 +102,46 @@ function createEmpty3dArray(arrayX, arrayY, arrayZ) {
 }
 
 function renderTerrainRanged() {
+  background(0);
+  console.log('rendering (ranged)');
+
+  let eyeX = camera.eyeX / cubeWidth;
+  let camY = camera.eyeY / cubeWidth;
+  let eyeZ = camera.eyeZ / cubeWidth;
+
+  // fill('red')
+  // translate(0, 200, 0)
+  // box(5, 5, 5);
+
+  for (let y = camY - renderRadius; y < camY + renderRadius + 1; y++) {
+    for (let x = eyeX - renderRadius; x < eyeX + renderRadius + 1; x++) {
+      for (let z = eyeZ - renderRadius; z < eyeZ + renderRadius; z++) {
+        push();
+        translate(x * cubeWidth, y * cubeWidth + yOffset, z * cubeWidth);
+
+        if (worldArray[y][x][z] !== 0) {
+          if (worldArray[y][x][z] === 1) {
+            fill('green');
+          }
+          if (worldArray[y][x][z] === 2) {
+            fill('brown');
+          }
+
+          box(cubeWidth, cubeWidth, cubeWidth);
+        }
+        pop();
+      }
+    }
+  }
+}
+
+function renderTerrain() {
+  console.log('rendering');
+
+  // fill('red');
+  // translate(0, 200, 0);
+  // box(5, 5, 5);
+
   for (let y = 0; y < worldArray.length; y++) {
     for (let x = round(camera.eyeX / cubeWidth) - renderRadius; x < round(camera.eyeX / cubeWidth) + renderRadius; x++) {
       for (let z = round(camera.eyeZ / cubeWidth) - renderRadius; z < round(camera.eyeZ / cubeWidth) + renderRadius; z++) {
@@ -123,39 +163,6 @@ function renderTerrainRanged() {
         }
         pop();
         // console.log('rendered block at ${x}, ${y}, ${z}');
-      }
-    }
-    // console.log('layer rendered');
-  }
-}
-
-function renderTerrain() {
-  console.log('rendering');
-
-  fill('red')
-  translate(0, 200, 0)
-  box(5, 5, 5);
-
-  for (let y = 0; y < worldArray.length; y++) {
-    for (let x = 0; x < worldArray[0].length; x++) {
-      for (let z = 0; z < worldArray[0][0].length; z++) {
-        push();
-        translate(x * cubeWidth, y * cubeWidth + yOffset, z * cubeWidth);
-
-        if (worldArray[y][x][z] !== 0) {
-          if (worldArray[y][x][z] === 1) {
-            texture(grass);
-          }
-          if (worldArray[y][x][z] === 2) {
-            texture(dirt);
-          }
-          if (worldArray[y][x][z] === 3) {
-            texture(stone);
-          }
-
-          box(cubeWidth, cubeWidth, cubeWidth);
-        }
-        pop();
       }
     }
     // console.log('layer rendered');
