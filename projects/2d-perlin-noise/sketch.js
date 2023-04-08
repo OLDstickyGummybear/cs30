@@ -20,7 +20,7 @@ let spawnZ;
 let grass;
 let dirt;
 
-let renderRadius = 5; // in blocks
+let renderRadius = 9; // in blocks
 
 let yOffset = -200;
 
@@ -43,42 +43,32 @@ function setup() {
   
   generateNoise();
 
-  spawnY = findSpawnY(spawnX, spawnZ);
+  spawnY = findSpawnY(spawnX, spawnZ, worldArray);
   
   // camera.move(0, 0, 1000);
 
-  camera.move(spawnX * cubeWidth, spawnY * -cubeWidth, spawnZ * cubeWidth); // sets starting camera position
-  camera.pan(45);
-  camera.tilt(45);
-
-
-  renderTerrainRanged();
+  camera.move(spawnX * cubeWidth, (worldArray.length - spawnY) * cubeWidth, spawnZ * cubeWidth); // sets starting camera position
   
 }
 
-function findSpawnY(x, z) {
-  for (let y = 0; y < worldArray.length; y++) {
-    if (worldArray[y][x][z] != 0) {
-      return y + 2;
+function findSpawnY(x, z, array) {
+  for (let y = 0; y < array.length; y++) {
+    if (array[y][x][z] !== 0) {
+      console.log(y);
+      return y - 2;
     }
   }
 }
 
 function draw() {
-  // push();
-  // fill('red')
-  // translate(0, 200, 0)
-  // box(5, 1000, 5);
-  // pop();
-
   // camera.tilt(2);
   // renderTerrainRanged();
   background(0);
-  directionalLight(255, 255, 255, 1, 0, 0);
-  directionalLight(255, 255, 255, 0, 0, 1);
-  directionalLight(255, 255, 255, 0, 0, -1);
-  directionalLight(255, 255, 255, -1, 0, 0);
-  directionalLight(255, 255, 255, 0, 0.5, 0);
+  directionalLight(150, 150, 150, 1, 0, 0);
+  directionalLight(100, 100, 100, 0, 0, 1);
+  directionalLight(200, 200, 200, 0, 0, -1);
+  directionalLight(200, 200, 200, -1, 0, 0);
+  directionalLight(255, 255, 255, 0, 1, 0);
 
   moveCam();
 
@@ -103,12 +93,12 @@ function createEmpty3dArray(arrayX, arrayY, arrayZ) {
 
 function renderTerrainRanged() {
   for (let y = 0; y < worldArray.length; y++) {
-    for (let x = round(camera.eyeX / cubeWidth) - renderRadius; x < round(camera.eyeX / cubeWidth) + renderRadius; x++) {
-      for (let z = round(camera.eyeZ / cubeWidth) - renderRadius; z < round(camera.eyeZ / cubeWidth) + renderRadius; z++) {
+    for (let x = Math.max(round(camera.eyeX / cubeWidth) - renderRadius, 0); x < Math.min(round(camera.eyeX / cubeWidth) + renderRadius, worldArray[y].length); x++) {
+      for (let z = Math.max(round(camera.eyeZ / cubeWidth) - renderRadius, 0); Math.min(z < round(camera.eyeZ / cubeWidth) + renderRadius, worldArray[y][x].length); z++) {
         push();
-        translate(x * cubeWidth, y * cubeWidth + yOffset, z * cubeWidth);
+        translate(x * cubeWidth, y * cubeWidth, z * cubeWidth);
 
-        if (worldArray[y][x][z] !== 0) {
+        if (worldArray[y][x][z] !== 0 && !isNaN(worldArray[y][x][z])) {
           if (worldArray[y][x][z] === 1) {
             texture(grass);
           }
@@ -180,32 +170,10 @@ function generateNoise() {
         else {
           worldArray[yIter][x][z] = 3; // Generates lower layers; 3 is stone
         }
-
-        // (worldArray.length - yGen < 5 ? worldArray.length : yGen + 5)
-      //   worldArray[yIter][x][z] = 2; // Generates lower layers; 2 is dirt
-      // }
-      // for (let yIter = yGen + 1; yIter < worldArray.length; yIter ++) {
-      //   console.log(yIter,x,z);
-      //   worldArray[yIter][x][z] = 2; // Generates lower layers; 3 is stone
       }
     }
   }
   console.log('terrain generated');
-
-  // Fill the ground beneath
-  // for (let y = 0; y < worldArray.length; y++) {
-  //   for (let x = 0; x < worldArray[0].length; x++) {
-  //     for (let z = 0; z < worldArray[0][0].length; z++) {
-  //       if (worldArray[y][x][z] === 1) {
-  //         for (let yIter = worldArray[y][x][z] - 1; yIter < worldArray.length; yIter ++) {
-  //           console.log(yIter,x,z);
-  //           worldArray[yIter][x][z] = 1;
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
-
 }
 
 function moveCam() {
@@ -242,17 +210,16 @@ function moveCam() {
   if (keyIsDown(DOWN_ARROW)) { // v
     camera.tilt(1);
   }
-
+  
 
   console.log(camera.eyeX);
 }
 
-// function keyPressed() {
-//   if (keyIsDown(UP_ARROW)) {
-//     zoom += 50;
-//   }
-//   if (keyIsDown(DOWN_ARROW)) {
-//     zoom -= 50;
-//   }
-//   generateNoise();
-// } 
+function keyPressed() {
+  if (keyIsDown(69) && renderRadius <= round(Math.max(genXWidth, genZWidth) / 2)) { // E
+    renderRadius ++;
+  }
+  if (keyIsDown(81) && renderRadius >= 3) { // Q
+    renderRadius --;
+  }
+} 
