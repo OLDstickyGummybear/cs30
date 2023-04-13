@@ -35,6 +35,10 @@ function setup() {
   noStroke();
   angleMode(DEGREES);
 
+  genXWidth = Number(prompt("World width:", "100"));
+  genZWidth = Number(prompt("World length:", "100"));
+  genYHeight = Number(prompt("World height:", "20"));
+
   spawnX = round(genXWidth/2);
   spawnZ = round(genZWidth/2);
   
@@ -93,8 +97,8 @@ function createEmpty3dArray(arrayX, arrayY, arrayZ) {
 
 function renderTerrainRanged() {
   for (let y = 0; y < worldArray.length; y++) {
-    for (let x = Math.max(round(camera.eyeX / cubeWidth) - renderRadius, 0); x < Math.min(round(camera.eyeX / cubeWidth) + renderRadius, worldArray[y].length); x++) {
-      for (let z = Math.max(round(camera.eyeZ / cubeWidth) - renderRadius, 0); Math.min(z < round(camera.eyeZ / cubeWidth) + renderRadius, worldArray[y][x].length); z++) {
+    for (let x = Math.max(round(camera.eyeX / cubeWidth) - renderRadius, 0); x <= Math.min(round(camera.eyeX / cubeWidth) + renderRadius, worldArray[y].length); x++) {
+      for (let z = Math.max(round(camera.eyeZ / cubeWidth) - renderRadius, 0); z <= Math.min(round(camera.eyeZ / cubeWidth) + renderRadius, worldArray[y][x].length); z++) {
         push();
         translate(x * cubeWidth, y * cubeWidth, z * cubeWidth);
 
@@ -219,7 +223,7 @@ function keyPressed() {
   if (keyIsDown(69) && renderRadius <= round(Math.max(genXWidth, genZWidth) / 2)) { // E
     renderRadius ++;
   }
-  if (keyIsDown(81) && renderRadius >= 3) { // Q
+  if (keyIsDown(81) && renderRadius >= 4) { // Q
     renderRadius --;
   }
 } 
