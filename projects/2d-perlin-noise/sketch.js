@@ -5,196 +5,180 @@
 // April 6th, 2023
 // This project procedurally generates a voxel-based terrain using perlin noise within a 3D array. The aesthetic aim is to recreate the terrain generation of Minecraft, including its layering of grass, dirt, and stone. The camera is moved with WASD, space, and shift as per Minecraft's control scheme, and rotated with the arrow keys. The render distance is limited to a square around the camera, which can be either increased or decreased with E or Q, respectively.
 
-
+// Declare the 3D array that contains the world data
 let worldArray = [];
 
-let zoom = 20;
+// Declares constants
+const ZOOM = 20; // Controls size of details in terrain. Larger -> flatter
+const CUBEWIDTH = 50;
 
+// Declares variable to control render distance
+let renderRadius = 9; // in blocks
+
+// Declares default world generation dimensions
 let genXWidth;
 let genZWidth;
-let genYHeight = 20;
+let genYHeight;
 
-// let genFloor = 12; // y= 12 is lowest terrain
-// let genCeiling = 1; // y= 50 is highest terrain
-
-let cubeWidth = 50;
-
+// Declares spawnpoint variables
 let spawnY;
 let spawnX;
 let spawnZ;
 
+// Declares block types
 let grass;
 let dirt;
-
-let renderRadius = 9; // in blocks
-
-let yOffset = -200;
+let stone;
 
 function preload() {
+  // Preloads block textures
   grass = loadImage('grass.png');
   dirt = loadImage('dirt.png');
   stone = loadImage('stone.png');
 }
 
 function setup() {
+  // Sets up canvas
   createCanvas(windowWidth, windowHeight, WEBGL);
   noStroke();
   angleMode(DEGREES);
 
-  genXWidth = Number(prompt("World width:", "50"));
-  genZWidth = Number(prompt("World length:", "50"));
-  genYHeight = Number(prompt("World height:", "20"));
+  // Sets up camera
+  camera = createCamera();
 
+  // Prompts user to input world generation size; the larger the number, the slower the generation.
+  genXWidth = Number(prompt("World width:", "100"));
+  genZWidth = Number(prompt("World length:", "100"));
+  genYHeight = Number(prompt("World height:", "20"));
+  
+  // Generates empty 3D array according to the size specified above, saves array in worldArray
+  worldArray = createEmpty3DArray(genXWidth, genYHeight, genZWidth);
+  
+  // Generates terrain in worldArray
+  generateNoise(worldArray);
+
+  // Calculates spawnpoint to be in the centre of the array
   spawnX = round(genXWidth/2);
   spawnZ = round(genZWidth/2);
-  
-  camera = createCamera();
-  worldArray = createEmpty3dArray(genXWidth, genYHeight, genZWidth);
-  
-  generateNoise();
 
+  // Calculates safe Y-coordinate of spawnpoint using findSpawnY()
   spawnY = findSpawnY(spawnX, spawnZ, worldArray);
-  
-  // camera.move(0, 0, 1000);
 
-  // camera.move(spawnX * cubeWidth, (worldArray.length - spawnY) * cubeWidth, spawnZ * cubeWidth); // sets starting camera position
-  camera.move(spawnX * cubeWidth, spawnY * cubeWidth, spawnZ * cubeWidth);
-}
-
-function findSpawnY(x, z, array) {
-  for (let y = 0; y < array.length; y++) {
-    if (array[y][x][z] !== 0) {
-      console.log(y);
-      return y - 2;
-    }
-  }
+  // Moves camera to spawnpoint
+  camera.eyeX = spawnX * CUBEWIDTH;
+  camera.eyeY = spawnY * CUBEWIDTH;
+  camera.eyeZ = spawnZ * CUBEWIDTH;
+  camera.move(0, -1, 0);
 }
 
 function draw() {
-  // camera.tilt(2);
-  // renderTerrainRanged();
-  background(0);
+  // Sets background color
+  background('lightblue');
+
+  // Sets lighting on blocks
   directionalLight(150, 150, 150, 1, 0, 0);
   directionalLight(100, 100, 100, 0, 0, 1);
   directionalLight(200, 200, 200, 0, 0, -1);
   directionalLight(200, 200, 200, -1, 0, 0);
   directionalLight(255, 255, 255, 0, 1, 0);
 
+  // Detects keypresses
   moveCam();
 
-  renderTerrainRanged();
-
-  console.log(`upX: ${camera.upX}, upY: ${camera.upY}, centerZ: ${camera.upZ}`);
-
+  // Displays all blocks
+  renderTerrainRanged(worldArray);
 }
 
-function createEmpty3dArray(arrayX, arrayY, arrayZ) {
-  let volume = [];
-  for (let y = 0; y < arrayY; y++) {
+// Finds the Y-coordinate two blocks higher than the highest block at a given X- and Z-coordinate
+function findSpawnY(x, z, array) {
+  for (let y = 0; y < array.length; y++) {
+    if (array[y][x][z] !== 0) { // If a block is at (x, y, z):
+      return y - 3;
+    }
+  }
+}
+
+// Creates empty cubic array given a length, height, and width
+function createEmpty3DArray(width, height, length) {
+  let volume = []; // Creates empty output array 'volume'
+  for (let y = 0; y < height; y++) { // For each height layer, insert empty array into volume
     volume.push([]);
-    for (let x = 0; x < arrayX; x++) {
-      volume[y].push([]);
-      for (let z = 0; z < arrayZ; z++) {
+    for (let x = 0; x < width; x++) { // For each width row within each height layer, insert empty array into height array
+      volume[y].push([]); 
+      for (let z = 0; z < length; z++) { // For each length block within each width row within each height layer, insert a 0 into width array
         volume[y][x].push(0);
       } 
     }
   }
-  return volume;
+  return volume; // Return output array 
 }
 
-function renderTerrainRanged() {
-  for (let y = 0; y < worldArray.length; y++) {
-    for (let x = Math.max(round(camera.eyeX / cubeWidth) - renderRadius, 0); x < Math.min(round(camera.eyeX / cubeWidth) + renderRadius, worldArray[0].length); x++) {
-      for (let z = Math.max(round(camera.eyeZ / cubeWidth) - renderRadius, 0); z < Math.min(round(camera.eyeZ / cubeWidth) + renderRadius, worldArray[0][0].length); z++) {
+// Displays all cubes
+function renderTerrainRanged(array) {
+  for (let y = 0; y < array.length; y++) { // For each height layer
+    // Extra stuff below is to avoid reading array with out-of-range indices
+    for (let x = Math.max(round(camera.eyeX / CUBEWIDTH) - renderRadius, 0); x < Math.min(round(camera.eyeX / CUBEWIDTH) + renderRadius, array[0].length); x++) { // For X, render from either the X-coord of the camera minus render distance or the 0th index, whichever is largest, to either X-coord of the camera plus render distance or the last index, whichever is smallest
+      for (let z = Math.max(round(camera.eyeZ / CUBEWIDTH) - renderRadius, 0); z < Math.min(round(camera.eyeZ / CUBEWIDTH) + renderRadius, array[0][0].length); z++) { // For Z, same as above
+        
+        // Sets transformation matrix to where the cube should be
         push();
-        translate(x * cubeWidth, y * cubeWidth, z * cubeWidth);
+        translate(x * CUBEWIDTH, y * CUBEWIDTH, z * CUBEWIDTH);
 
-        if (!isNaN(worldArray[y][x][z]) && worldArray[y][x][z] !== 0) { // If the block at x y z is in the array AND if it is not 0
-          if (worldArray[y][x][z] === 1) {
+        // If it is not 0 AND if the x y z is in the array
+        if (!isNaN(array[y][x][z]) && array[y][x][z] !== 0) { 
+          if (array[y][x][z] === 1) { // 1 in the array means grass
             texture(grass);
           }
-          if (worldArray[y][x][z] === 2) {
+          if (array[y][x][z] === 2) { // 2 in the array means dirt
             texture(dirt);
           }
-          if (worldArray[y][x][z] === 3) {
+          if (array[y][x][z] === 3) { // 3 in the array means stone
             texture(stone);
           }
-
-          box(cubeWidth, cubeWidth, cubeWidth);
+          box(CUBEWIDTH, CUBEWIDTH, CUBEWIDTH); // Creates box
         }
-        pop();
-        // console.log('rendered block at ${x}, ${y}, ${z}');
+        pop(); // Resets transformation matrix
       }
     }
-    // console.log('layer rendered');
   }
 }
 
-function renderTerrain() {
-  console.log('rendering');
-
-  fill('red')
-  translate(0, 200, 0)
-  box(5, 5, 5);
-
-  for (let y = 0; y < worldArray.length; y++) {
-    for (let x = 0; x < worldArray[0].length; x++) {
-      for (let z = 0; z < worldArray[0][0].length; z++) {
-        push();
-        translate(x * cubeWidth, y * cubeWidth + yOffset, z * cubeWidth);
-
-        if (worldArray[y][x][z] !== 0) {
-          if (worldArray[y][x][z] === 1) {
-            texture(grass);
-          }
-          if (worldArray[y][x][z] === 2) {
-            texture(dirt);
-          }
-          if (worldArray[y][x][z] === 3) {
-            texture(stone);
-          }
-
-          box(cubeWidth, cubeWidth, cubeWidth);
-        }
-        pop();
-      }
-    }
-    // console.log('layer rendered');
-  }
-}
-
-function generateNoise() {
+// Procedurally generates terrain
+function generateNoise(array) {
+  // Picks random start point for Perlin noise
   let xOffset = random(1000000);
   let zOffset = random(1000000);
 
-  for (let x = 0; x < worldArray[0].length; x++) {
-    for (let z = 0; z < worldArray[0][0].length; z++) {
-      let yGen = round(map(noise((x + xOffset) / zoom, (z + zOffset) / zoom), 0, 1, 0, genYHeight));
-      worldArray[yGen][x][z] = 1; // Generates top layer; 1 is grass
-      for (let yIter = yGen + 1; yIter < worldArray.length; yIter ++) {
-        console.log(yIter,x,z);
+  for (let x = 0; x < array[0].length; x++) { // For each X-coordinate
+    for (let z = 0; z < array[0][0].length; z++) { // For each Z-coordinate
+      let yGen = round(map(noise((x + xOffset) / ZOOM, (z + zOffset) / ZOOM), 0, 1, 0, genYHeight)); // Generates Perlin noise using x and z and their respective offsets, maps noise to fit in the height of the world array, and rounds to whole number
+      array[yGen][x][z] = 1; // Generates top layer; 1 is grass
 
-        if (yIter < yGen + 4) {
-          worldArray[yIter][x][z] = 2; // Generates lower layers; 2 is dirt
+      // For each layer below the top layer
+      for (let yIter = yGen + 1; yIter < array.length; yIter ++) {
+
+        if (yIter <= yGen + 3) {// For 3 layers underneath the top layer
+          array[yIter][x][z] = 2; // Sets block as dirt
         } 
-        // add other layers if needed with else if
-        else {
-          worldArray[yIter][x][z] = 3; // Generates lower layers; 3 is stone
+
+        // add other layers here if needed with else if
+
+        else { // For everything below
+          array[yIter][x][z] = 3; // Sets block as stone
         }
       }
     }
   }
-  console.log('terrain generated');
 }
 
+// Moves camera according to key presses
 function moveCam() {
+  // Camera translation
   if (keyIsDown(87)) { // W
     camera.move(0, 0, -10);
-    
   }
   if (keyIsDown(83)) { // S
     camera.move(0, 0, 10);
-    console.log('moving back');
   }
   if (keyIsDown(65)) { // A
     camera.move(-10, 0, 0);
@@ -209,6 +193,7 @@ function moveCam() {
     camera.move(0, 10, 0);
   }
 
+  // Camera rotation
   if (keyIsDown(LEFT_ARROW)) { // <-
     camera.pan(1);
   }
@@ -221,17 +206,18 @@ function moveCam() {
   if (keyIsDown(DOWN_ARROW)) { // v
     camera.tilt(1);
   }
-  
-  
 
-  console.log(`x: ${round(camera.eyeX / cubeWidth)}, y: ${round(camera.eyeY / cubeWidth)}, z: ${round(camera.eyeZ / cubeWidth)}`);
+  // Logs camera coordinates in blocks
+  console.log(`x: ${(camera.eyeX / CUBEWIDTH).toFixed(2)}, y: ${(camera.eyeY / CUBEWIDTH).toFixed(2)}, z: ${(camera.eyeZ / CUBEWIDTH).toFixed(2)}`);
 }
 
+// For all keypresses that does not need continuous execution while being held
 function keyPressed() {
-  if (keyIsDown(69) && renderRadius <= round(Math.max(genXWidth, genZWidth) / 2)) { // E
+  // Change render distance
+  if (keyIsDown(69) && renderRadius <= round(Math.max(genXWidth, genZWidth) / 2)) { // E; maximum render distance is either world width or length, whichever is largest (not recommended)
     renderRadius ++;
   }
-  if (keyIsDown(81) && renderRadius >= 4) { // Q
+  if (keyIsDown(81) && renderRadius >= 4) { // Q; minimum render distance is 4 blocks
     renderRadius --;
   }
 } 
