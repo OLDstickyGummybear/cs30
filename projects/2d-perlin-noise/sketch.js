@@ -1,11 +1,17 @@
+// 2D Array Project
+// Kevin Liu
+// Mr. Schellenberg
+// Computer Science 30
+// April 6th, 2023
+// This project procedurally generates a voxel-based terrain using perlin noise within a 3D array. The aesthetic aim is to recreate the terrain generation of Minecraft, including its layering of grass, dirt, and stone. The camera is moved with WASD, space, and shift as per Minecraft's control scheme, and rotated with the arrow keys. The render distance is limited to a square around the camera, which can be either increased or decreased with E or Q, respectively.
 
 
 let worldArray = [];
 
 let zoom = 20;
 
-let genXWidth = 100;
-let genZWidth = 100;
+let genXWidth;
+let genZWidth;
 let genYHeight = 20;
 
 // let genFloor = 12; // y= 12 is lowest terrain
@@ -35,8 +41,8 @@ function setup() {
   noStroke();
   angleMode(DEGREES);
 
-  genXWidth = Number(prompt("World width:", "100"));
-  genZWidth = Number(prompt("World length:", "100"));
+  genXWidth = Number(prompt("World width:", "50"));
+  genZWidth = Number(prompt("World length:", "50"));
   genYHeight = Number(prompt("World height:", "20"));
 
   spawnX = round(genXWidth/2);
@@ -51,8 +57,8 @@ function setup() {
   
   // camera.move(0, 0, 1000);
 
-  camera.move(spawnX * cubeWidth, (worldArray.length - spawnY) * cubeWidth, spawnZ * cubeWidth); // sets starting camera position
-  
+  // camera.move(spawnX * cubeWidth, (worldArray.length - spawnY) * cubeWidth, spawnZ * cubeWidth); // sets starting camera position
+  camera.move(spawnX * cubeWidth, spawnY * cubeWidth, spawnZ * cubeWidth);
 }
 
 function findSpawnY(x, z, array) {
@@ -78,6 +84,7 @@ function draw() {
 
   renderTerrainRanged();
 
+  console.log(`upX: ${camera.upX}, upY: ${camera.upY}, centerZ: ${camera.upZ}`);
 
 }
 
@@ -97,12 +104,12 @@ function createEmpty3dArray(arrayX, arrayY, arrayZ) {
 
 function renderTerrainRanged() {
   for (let y = 0; y < worldArray.length; y++) {
-    for (let x = Math.max(round(camera.eyeX / cubeWidth) - renderRadius, 0); x <= Math.min(round(camera.eyeX / cubeWidth) + renderRadius, worldArray[y].length); x++) {
-      for (let z = Math.max(round(camera.eyeZ / cubeWidth) - renderRadius, 0); z <= Math.min(round(camera.eyeZ / cubeWidth) + renderRadius, worldArray[y][x].length); z++) {
+    for (let x = Math.max(round(camera.eyeX / cubeWidth) - renderRadius, 0); x < Math.min(round(camera.eyeX / cubeWidth) + renderRadius, worldArray[0].length); x++) {
+      for (let z = Math.max(round(camera.eyeZ / cubeWidth) - renderRadius, 0); z < Math.min(round(camera.eyeZ / cubeWidth) + renderRadius, worldArray[0][0].length); z++) {
         push();
         translate(x * cubeWidth, y * cubeWidth, z * cubeWidth);
 
-        if (worldArray[y][x][z] !== 0 && !isNaN(worldArray[y][x][z])) {
+        if (!isNaN(worldArray[y][x][z]) && worldArray[y][x][z] !== 0) { // If the block at x y z is in the array AND if it is not 0
           if (worldArray[y][x][z] === 1) {
             texture(grass);
           }
@@ -215,8 +222,9 @@ function moveCam() {
     camera.tilt(1);
   }
   
+  
 
-  console.log(camera.eyeX);
+  console.log(`x: ${round(camera.eyeX / cubeWidth)}, y: ${round(camera.eyeY / cubeWidth)}, z: ${round(camera.eyeZ / cubeWidth)}`);
 }
 
 function keyPressed() {
