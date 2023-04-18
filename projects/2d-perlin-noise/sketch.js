@@ -4,6 +4,8 @@
 // Computer Science 30
 // April 6th, 2023
 // This project procedurally generates a voxel-based terrain using perlin noise within a 3D array. The aesthetic aim is to recreate the terrain generation of Minecraft, including its layering of grass, dirt, and stone. The camera is moved with WASD, space, and shift as per Minecraft's control scheme, and rotated with the arrow keys. The render distance is limited to a square around the camera, which can be either increased or decreased with E or Q, respectively.
+// Wow factors: The use of a third dimension; use of p5.Camera; use of Perlin noise to generate terrain.
+
 
 // Declare the 3D array that contains the world data
 let worldArray = [];
