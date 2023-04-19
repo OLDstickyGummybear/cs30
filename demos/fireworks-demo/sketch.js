@@ -32,6 +32,11 @@ class Spark {
     this.y += this.dy;
   }
 
+  attraction() {
+    // see physics stuff
+  }
+  
+
   isDead() {
     return this.alpha < 0;
   }
