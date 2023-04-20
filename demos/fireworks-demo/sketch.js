@@ -1,5 +1,6 @@
 let allSparks = [];
 
+const GRAV = 0.3;
 
 class Spark {
   constructor(x, y, dx, dy, color) {
@@ -23,8 +24,8 @@ class Spark {
   updateGrav() {
     this.x += this.dx;
     this.y += this.dy;
-    this.alpha --;
-    this.dy += 0.01;
+    // this.alpha --;
+    // this.dy += 0.01;
   }
   
   update() {
@@ -32,8 +33,10 @@ class Spark {
     this.y += this.dy;
   }
 
-  attraction() {
+  attraction(otherSpark) {
     // see physics stuff
+    this.dx += (GRAV * otherSpark.size / dist(this.x, this.y, otherSpark.x, otherSpark.y) **2) * cos(atan((this.y - otherSpark.y)/(this.x - otherSpark.s)))
+    this.dy += (GRAV * otherSpark.size / dist(this.x, this.y, otherSpark.x, otherSpark.y) **2) * sin(atan((this.y - otherSpark.y)/(this.x - otherSpark.s)))
   }
   
 
@@ -53,14 +56,24 @@ function draw() {
   background(0, 0, 0, 50);
   for (let i = allSparks.length - 1; i >= 0; i--) { //count  backwards for reasons
     allSparks[i].display();
-    allSparks[i].updateGrav();
+
+    allSparks[i].update();
 
     // Remove if needed
-    if (allSparks[i].isDead()) {
-      allSparks.splice(i, 1);
-    }
+    // if (allSparks[i].isDead()) {
+    //   allSparks.splice(i, 1);
+    // }
   }
 
+  // for (let i = 0; i < allSparks.length - 1; i++) {
+  //   allSparks[i].display();
+  //   for (let otherSpark = 0; i < allSparks.length - 1; i++) {
+  //     if (allSparks[i] !== allSparks[otherSpark]) {
+  //       allSparks[i].attraction(otherSpark);
+  //     }
+  //   }
+  //   allSparks[i].update();
+  // }
 }
 
 function spawnSpark(dx, dy) {
@@ -69,9 +82,9 @@ function spawnSpark(dx, dy) {
 }
 
 function mousePressed() {
-  for (let i = 0; i < 720; i++) {
+  for (let i = 0; i < 360; i++) {
     
-    spawnSpark(random(cos(i)-0.5, cos(i)+0.5), random(sin(i)-0.5, sin(i)+0.5));
+    spawnSpark(cos(i), sin(i));
 
   }
 }
