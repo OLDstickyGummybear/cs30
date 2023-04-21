@@ -1,6 +1,6 @@
 let allSparks = [];
 
-let GRAV = 1;
+let GRAV = 0;
 
 class Spark {
   constructor(x, y, dx, dy) {
@@ -38,19 +38,22 @@ class Spark {
     let gravX = 0;
     let gravY = 0;
 
-    for (let i = 0; i < allSparks.length - 1; i++) {
-      let otherSpark = allSparks[i];
+    for (let otherSpark in allSparks) {
       if (otherSpark !== this) {
-        gravX += (GRAV * otherSpark.size / dist(this.x, this.y, otherSpark.x, otherSpark.y) **2) * cos(atan((otherSpark.y - this.y)/(otherSpark.x - this.x)));
+        gravX += (GRAV * otherSpark.size / dist(this.x, this.y, otherSpark.x, otherSpark.y) **2) * cos(atan((this.y - otherSpark.y)/(this.x - otherSpark.s)));
         
-        // console.log((GRAV * otherSpark.size / dist(this.x, this.y, otherSpark.x, otherSpark.y) **2) * cos(atan((this.y - otherSpark.y)/(this.x - otherSpark.x))));
+        console.log((GRAV * otherSpark.size / dist(this.x, this.y, otherSpark.x, otherSpark.y) **2) * cos(atan((this.y - otherSpark.y)/(this.x - otherSpark.s))));
         
-        gravY += (GRAV * otherSpark.size / dist(this.x, this.y, otherSpark.x, otherSpark.y) **2) * sin(atan((otherSpark.y - this.y)/(otherSpark.x - this.x)));
+        gravY += (GRAV * otherSpark.size / dist(this.x, this.y, otherSpark.x, otherSpark.y) **2) * sin(atan((this.y - otherSpark.y)/(this.x - otherSpark.s)));
       }
     }
+
     this.dx += gravX;
     this.dy += gravY;
+    
+
   }
+  
 
   isDead() {
     return this.alpha < 0;
@@ -84,18 +87,16 @@ function draw() {
   }
 }
 
-function spawnSpark(x, y, dx, dy) {
-  let theSpark = new Spark(x, y, dx, dy);
+function spawnSpark(dx, dy) {
+  let theSpark = new Spark(mouseX, mouseY, dx, dy);
   allSparks.push(theSpark);
 }
 
 function mousePressed() {
-  let numOfSparks = 10
-  for (let i = 0; i < numOfSparks; i++) {
-    let spawnRadius = 50;
-    degrees =  i* 360 / numOfSparks;
-    spawnSpark(mouseX + (spawnRadius * cos(degrees)), mouseY + (spawnRadius * sin(degrees)), 0, 0);//random(cos(degrees) - 0.5, cos(degrees) + 0.5), random(sin(degrees) - 0.5, sin(degrees) + 0.5));
-    // spawnSpark(cos(degrees), sin(degrees));
+  for (let i = 0; i < 360; i++) {
+    
+    spawnSpark(random(cos(i) - 0.5, cos(i) + 0.5), random(sin(i) - 0.5, sin(i) + 0.5));
+    // spawnSpark(cos(i), sin(i));
 
   }
 }
