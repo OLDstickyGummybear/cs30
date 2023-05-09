@@ -88,7 +88,7 @@ function draw() {
   moveCam();
 
   // Displays all blocks
-  // renderTerrainRansged(worldArray);
+  renderTerrainRanged(worldArray);
 }
 
 // Finds the Y-coordinate two blocks higher than the highest block at a given X- and Z-coordinate
